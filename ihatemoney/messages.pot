@@ -318,6 +318,9 @@ msgstr ""
 msgid "The bill has been modified"
 msgstr ""
 
+msgid "The bill has been settled"
+msgstr ""
+
 #, python-format
 msgid "%(lang)s is not a supported language"
 msgstr ""

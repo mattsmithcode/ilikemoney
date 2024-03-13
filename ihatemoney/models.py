@@ -682,6 +682,8 @@ class Bill(db.Model):
     original_currency = db.Column(db.String(3))
     converted_amount = db.Column(db.Float)
 
+    is_settlement = db.Column(db.Boolean, default=False)
+
     archive = db.Column(db.Integer, db.ForeignKey("archive.id"))
 
     currency_helper = CurrencyConverter()
@@ -696,6 +698,7 @@ class Bill(db.Model):
         payer_id: int = None,
         project_default_currency: str = "",
         what: str = "",
+        is_settlement: bool = False,
     ):
         super().__init__()
         self.amount = amount
@@ -708,6 +711,7 @@ class Bill(db.Model):
         self.converted_amount = self.currency_helper.exchange_currency(
             self.amount, self.original_currency, project_default_currency
         )
+        self.is_settlement = is_settlement
 
     @property
     def _to_serialize(self):

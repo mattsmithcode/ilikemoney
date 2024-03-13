@@ -364,6 +364,7 @@ class BillForm(FlaskForm):
     payed_for = SelectMultipleField(
         _("For whom?"), validators=[DataRequired()], coerce=int
     )
+    is_settlement = BooleanField(_("Is Settlement?"), default=False)
     submit = SubmitField(_("Submit"))
     submit2 = SubmitField(_("Submit and add a new one"))
 
@@ -377,6 +378,7 @@ class BillForm(FlaskForm):
             payer_id=self.payer.data,
             project_default_currency=project.default_currency,
             what=self.what.data,
+            is_settlement=self.is_settlement.data
         )
 
     def save(self, bill, project):
@@ -390,6 +392,7 @@ class BillForm(FlaskForm):
         bill.converted_amount = self.currency_helper.exchange_currency(
             bill.amount, bill.original_currency, project.default_currency
         )
+        bill.is_settlement = self.is_settlement
         return bill
 
     def fill(self, bill, project):
@@ -400,6 +403,7 @@ class BillForm(FlaskForm):
         self.original_currency.data = bill.original_currency
         self.date.data = bill.date
         self.payed_for.data = [int(ower.id) for ower in bill.owers]
+        self.is_settlement = bill.is_settlement
 
         self.original_currency.label = Label("original_currency", _("Currency"))
         self.original_currency.description = _(

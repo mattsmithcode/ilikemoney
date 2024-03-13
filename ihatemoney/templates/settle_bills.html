@@ -9,13 +9,24 @@
 
 {% block content %}
     <table id="bill_table" class="split_bills table table-striped">
-        <thead><tr><th>{{ _("Who pays?") }}</th><th>{{ _("To whom?") }}</th><th>{{ _("How much?") }}</th></tr></thead>
+        <thead><tr><th>{{ _("Who pays?") }}</th><th>{{ _("To whom?") }}</th><th>{{ _("How much?") }}</th><th>{{ _("Actions") }}</th></tr></thead>
     <tbody>
     {% for bill in bills %}
     <tr receiver={{bill.receiver.id}}>
             <td>{{ bill.ower }}</td>
             <td>{{ bill.receiver }}</td>
             <td>{{ bill.amount|currency }}</td>
+            <td class="bill-actions d-flex align-items-center">
+                <form action="{{ url_for(".add_bill") }}" method="POST">
+                    {{ csrf_form.csrf_token }}
+                    <input name="what" type="hidden" value="Settlement" />
+                    <input name="payer" type="hidden" value="{{ bill.ower.id }}" />
+                    <input name="payed_for" type="hidden" value="{{ bill.receiver.id }}" />
+                    <input name="amount" type="hidden" value="{{ bill.amount }}" />
+                    <input name="is_settlement" type="hidden" value="true" />
+                    <button class="action settle" type="submit" title="{{ _("Mark as settled") }}"></button>
+                </form>
+            </td>
     </tr>
     {% endfor %}
     </tbody>

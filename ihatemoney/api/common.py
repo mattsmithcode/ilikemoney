@@ -192,6 +192,14 @@ class BillHandler(Resource):
         return "OK", 200
 
 
+class SettlementsHandler(Resource):
+    method_decorators = [need_auth]
+
+    def get(self, project):
+        settlements = project.get_transactions_to_settle_bill()
+        return settlements, 200
+
+
 class TokenHandler(Resource):
     method_decorators = [need_auth]
 

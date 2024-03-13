@@ -318,7 +318,9 @@ footer .footer-left {
 
 .bill-actions>form>.delete,
 .bill-actions>.edit,
-.bill-actions>.show {
+.bill-actions>.show,
+.bill-actions>form>.settle,
+.bill-actions>.blank {
   font-size: 0px;
   display: block;
   width: 16px;
@@ -346,12 +348,20 @@ footer .footer-left {
   background: url("../images/show.png") no-repeat right;
 }
 
+.bill-actions>form>.settle {
+  background: url("../images/accept.png") no-repeat right;
+}
+
 #bill_table,
 #monthly_stats,
 #history_table {
   margin-top: 30px;
   margin-bottom: 30px;
   flex-basis: auto;
+}
+
+#bill_table .settlement {
+  font-style: italic;
 }
 
 #bill-toolbar {

@@ -775,7 +775,10 @@ def add_bill():
             db.session.add(form.export(g.project))
             db.session.commit()
 
-            flash(_("The bill has been added"))
+            if form.is_settlement.data:
+                flash(_("The bill has been settled"))
+            else:
+                flash(_("The bill has been added"))
 
             args = {}
             if form.submit2.data:
@@ -844,8 +847,19 @@ def change_lang(lang):
 @main.route("/<project_id>/settle_bills")
 def settle_bill():
     """Compute the sum each one have to pay to each other and display it"""
+    bill_form = get_billform_for(g.project)
+    # Used for CSRF validation
+    csrf_form = EmptyForm()
+
     bills = g.project.get_transactions_to_settle_bill()
-    return render_template("settle_bills.html", bills=bills, current_view="settle_bill")
+
+    return render_template(
+        "settle_bills.html",
+        bills=bills,
+        bill_form=bill_form,
+        csrf_form=csrf_form,
+        current_view="settle_bill"
+    )
 
 
 @main.route("/<project_id>/history")

@@ -11,6 +11,7 @@ from ihatemoney.api.common import (
     ProjectHandler,
     ProjectsHandler,
     ProjectStatsHandler,
+    SettlementsHandler,
     TokenHandler,
 )
 
@@ -33,3 +34,4 @@ restful_api.add_resource(BillsHandler, "/projects/<string:project_id>/bills")
 restful_api.add_resource(
     BillHandler, "/projects/<string:project_id>/bills/<int:bill_id>"
 )
+restful_api.add_resource(SettlementsHandler, "/projects/<string:project_id>/settlements")

@@ -102,7 +102,9 @@
             </li>
             {% if g.project %}
             <li><a class="dropdown-item" href="{{ url_for("main.history") }}">{{ _("History") }}</a></li>
+            {% if session['is_admin'] or session[g.project.id]['is_admin'] %}
             <li><a class="dropdown-item" href="{{ url_for("main.edit_project") }}">{{ _("Settings") }}</a></li>
+            {% endif %}
             <li><a class="dropdown-item" href="{{ url_for("main.feed", token=g.project.generate_token("feed")) }}">{{ _("RSS Feed") }}</a></li>
             {% endif %}
 

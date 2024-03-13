@@ -121,6 +121,14 @@ def migrate_session(endpoint, values):
         # Migrate https://github.com/spiral-project/ihatemoney/pull/1082
         session["projects"] = {id: name for (id, name) in session["projects"]}
 
+    if "project_id" not in values:
+        return
+
+    project_id = values["project_id"]
+
+    if project_id in session and isinstance(session[project_id], bool):
+        session[project_id] = {"is_admin": False}
+
 
 @main.url_value_preprocessor
 def set_show_admin_dashboard_link(endpoint, values):
@@ -218,7 +226,7 @@ def admin():
     )
 
 
-def set_authorized_project(project: Project):
+def set_authorized_project(project: Project, is_admin: bool):
     # maintain a list of visited projects
     new_project = {project.id: project.name}
     if "projects" not in session:
@@ -226,7 +234,7 @@ def set_authorized_project(project: Project):
     else:
         # add the project on the top of the list
         session["projects"] = {**new_project, **session["projects"]}
-    session[project.id] = True
+    session[project.id] = {"is_admin": is_admin}
     # Set session to permanent to make language choice persist
     session.permanent = True
     session.update()
@@ -242,7 +250,7 @@ def join_project(token):
         flash(_("Provided token is invalid"), "danger")
         return redirect("/")
 
-    set_authorized_project(g.project)
+    set_authorized_project(g.project, False)
     return redirect(url_for(".list_bills"))
 
 
@@ -264,14 +272,14 @@ def authenticate(project_id=None):
         )
 
     # if credentials are already in session, redirect
-    if session.get(project_id):
+    if session.get(project_id) and session[project_id].get("is_admin"):
         setattr(g, "project", project)
         return redirect(url_for(".list_bills"))
 
     # else do form authentication authentication
     is_post_auth = request.method == "POST" and form.validate()
     if is_post_auth and check_password_hash(project.password, form.password.data):
-        set_authorized_project(project)
+        set_authorized_project(project, True)
         setattr(g, "project", project)
         return redirect(url_for(".list_bills"))
     if is_post_auth and not check_password_hash(project.password, form.password.data):
@@ -333,7 +341,7 @@ def create_project():
             db.session.commit()
 
             # create the session object (authenticate)
-            set_authorized_project(project)
+            set_authorized_project(project, True)
 
             # send reminder email
             g.project = project
@@ -419,6 +427,9 @@ def reset_password():
 
 @main.route("/<project_id>/edit", methods=["GET", "POST"])
 def edit_project():
+    if not (session.get("is_admin") or session[g.project.id]["is_admin"]):
+        return redirect(url_for("main.list_bills"))
+
     edit_form = EditProjectForm(id=g.project.id)
     import_form = ImportProjectForm(id=g.project.id)
     delete_form = DestructiveActionProjectForm(id=g.project.id)

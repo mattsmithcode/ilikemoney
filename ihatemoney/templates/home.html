@@ -60,34 +60,30 @@
         </form>
       </div>
     </div>
-    <div class="card">
-      <div class="card-header">
-        {{ _("Create a new project") }}
-      </div>
-      <div class="card-body">
-        {% if is_public_project_creation_allowed %}
-            <form
-            id="creation-form"
-            class="form-horizontal"
-            action="{{ url_for('.create_project') }}"
-            method="post"
-            >
-            <fieldset class="form-group">
-                {{ forms.create_project(project_form, home=True) }}
-            </fieldset>
-            <div class="controls">
-                <button class="btn btn-primary btn-block" type="submit">
-                {{ _("Create") }}
-                </button>
-            </div>
-            </form>
-        {% else %}
-            <a href="{{ url_for('.create_project') }}">
-                {{ _("Create a new project") }}
-            </a>
-        {% endif %}
-      </div>
-    </div>
+    {% if is_public_project_creation_allowed %}
+        <div class="card">
+          <div class="card-header">
+            {{ _("Create a new project") }}
+          </div>
+          <div class="card-body">
+                <form
+                id="creation-form"
+                class="form-horizontal"
+                action="{{ url_for('.create_project') }}"
+                method="post"
+                >
+                <fieldset class="form-group">
+                    {{ forms.create_project(project_form, home=True) }}
+                </fieldset>
+                <div class="controls">
+                    <button class="btn btn-primary btn-block" type="submit">
+                    {{ _("Create") }}
+                    </button>
+                </div>
+                </form>
+          </div>
+        </div>
+    {% endif %}
   </div>
 </main>
 {% endblock %}
